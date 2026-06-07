@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Library - Automation & Management System</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Sans Font family -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside>
+            <div class="logo-container">
+                <i class="fa-solid fa-book-bookmark logo-icon"></i>
+                <span class="logo-text">LibAuto v1.0</span>
+            </div>
+
+            <!-- Role Selector Switch -->
+            <div class="role-selector">
+                <div class="role-indicator" id="roleIndicator"></div>
+                <button class="role-btn active" onclick="switchRole('admin')">Admin</button>
+                <button class="role-btn" onclick="switchRole('user')">User</button>
+            </div>
+
+            <!-- Navigation Links -->
+            <ul class="nav-links" id="sidebarMenu">
+                <!-- Dynamic Menu Loaded by JavaScript -->
+            </ul>
+
+            <div class="sidebar-footer">
+                <p>&copy; 2026 LibAuto Inc.</p>
+                <p>Digital Automation System</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Top Header -->
+            <header>
+                <div class="page-title">
+                    <h1 id="viewTitle">Dashboard</h1>
+                    <p id="viewSubtitle">Library metrics and tracking dashboard.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="glass-card" style="padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; border-radius: 10px;">
+                        <i class="fa-solid fa-calendar-days" style="color: var(--primary);"></i>
+                        <span id="currentDateStr">June 4, 2026</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ================= ADMIN VIEWS ================= -->
+
+            <!-- ADMIN: Dashboard -->
+            <section id="admin-dashboard" class="view-page">
+                <!-- Summary cards -->
+                <div class="dashboard-stats" id="dashboardStats">
+                    <!-- Loaded dynamically -->
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Category Chart Card -->
+                    <div class="glass-card chart-card">
+                        <div class="chart-header">
+                            <h3 style="font-weight: 700; font-size: 1.1rem;">Category Distribution</h3>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Book counts by genre</span>
+                        </div>
+                        <div class="chart-container" id="categoryChartContainer">
+                            <!-- Loaded dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Card -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; height: 380px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="font-weight: 700; font-size: 1.1rem;">Recent Activity</h3>
+                            <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem; border-radius: 8px;" onclick="navigateTo('admin-transactions')">View All</button>
+                        </div>
+                        <ul class="recent-activity-list" id="recentActivityList">
+                            <!-- Loaded dynamically -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMIN: Manage Books -->
+            <section id="admin-books" class="view-page">
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="adminBookSearch" placeholder="Search books by title, author, or ISBN..." oninput="loadAdminBooks()">
+                    </div>
+                    <button class="btn btn-primary" onclick="openBookModal()"><i class="fa-solid fa-plus"></i> Add New Book</button>
+                </div>
+
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Book Details</th>
+                                <th>ISBN</th>
+                                <th>Category</th>
+                                <th>Copies Available</th>
+                                <th>Total Copies</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminBooksTableBody">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ADMIN: Manage Members -->
+            <section id="admin-members" class="view-page">
+                <div class="filter-bar">
+                    <div class="search-box" style="flex-grow: 1;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="adminMemberSearch" placeholder="Search members by name or email..." oninput="loadAdminMembers()">
+                    </div>
+                    <button class="btn btn-primary" onclick="openMemberModal()"><i class="fa-solid fa-user-plus"></i> Add New Member</button>
+                </div>
+
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Member ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Type</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminMembersTableBody">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ADMIN: Issues & Returns -->
+            <section id="admin-transactions" class="view-page">
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="openIssueModal()"><i class="fa-solid fa-arrow-up-from-bracket"></i> Issue Book</button>
+                    <button class="btn btn-secondary" onclick="openReturnModal()"><i class="fa-solid fa-arrow-down-to-bracket"></i> Return Book</button>
+                </div>
+
+                <div class="glass-card table-container">
+                    <div style="margin-bottom: 1rem; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">Active Checkouts & Outstanding Fines</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Issued To</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
+                                <th>Status / Fine</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activeCheckoutsTableBody">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="glass-card table-container" style="margin-top: 2rem;">
+                    <div style="margin-bottom: 1rem; font-weight: 700; font-size: 1.1rem; color: var(--text-primary);">All System Reservations</div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Reservation ID</th>
+                                <th>Book Title</th>
+                                <th>Reserved For</th>
+                                <th>Date Placed</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allReservationsTableBody">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ADMIN: Queries Box -->
+            <section id="admin-queries" class="view-page">
+                <div class="glass-card table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sender</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Date Received</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminQueriesTableBody">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- ================= USER VIEWS ================= -->
+
+            <!-- USER: Explore Books -->
+            <section id="user-explore" class="view-page">
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="userBookSearch" placeholder="Search books by title, author, or ISBN..." oninput="loadUserBooks()">
+                    </div>
+                    <div class="category-tabs" id="categoryTabs">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+
+                <div class="books-grid" id="userBooksGrid">
+                    <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+            <!-- USER: My Account -->
+            <section id="user-account" class="view-page">
+                <div class="glass-card" style="max-width: 480px; margin: 0 auto 2rem auto; text-align: center;" id="accountLoginCard">
+                    <h3 style="font-weight: 700; margin-bottom: 0.5rem; font-size: 1.25rem;">Enter Your Member ID</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">Access your checked-out books, pending reservations, and check outstanding fines.</p>
+                    <div class="form-group">
+                        <input type="number" id="loginMemberId" class="form-input" placeholder="e.g. 1" style="text-align: center; font-size: 1.2rem; font-weight: 700;">
+                    </div>
+                    <button class="btn btn-primary" onclick="loginUserAccount()" style="width: 100%;">View Profile</button>
+                </div>
+
+                <div id="accountDashboard" style="display: none;">
+                    <div class="account-profile-grid">
+                        <div class="glass-card profile-card" id="memberProfileCard">
+                            <!-- Loaded dynamically -->
+                        </div>
+
+                        <div class="glass-card" style="display: flex; flex-direction: column;">
+                            <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 1.25rem;">Current Book Checkouts</div>
+                            <div class="table-container" style="flex-grow: 1;">
+                                <table class="data-table" style="font-size: 0.85rem;">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Status / Fine</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="userCheckoutsTableBody">
+                                        <!-- Loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card table-container" style="margin-top: 1.5rem;">
+                        <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 1rem;">My Book Bookings (Reservations)</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Book Title</th>
+                                    <th>Author</th>
+                                    <th>Date Reserved</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userReservationsTableBody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- USER: Contact Form -->
+            <section id="user-contact" class="view-page">
+                <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+                    <div id="contactFormWrapper">
+                        <h3 style="font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem;">Send a Query</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">Have a question about a book, fine, or reservation? Send us a message and library administrators will get back to you.</p>
+                        
+                        <form id="contactForm" onsubmit="submitUserQuery(event)">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="queryName">Your Name</label>
+                                    <input type="text" id="queryName" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="queryEmail">Your Email</label>
+                                    <input type="email" id="queryEmail" class="form-input" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="querySubject">Subject</label>
+                                <input type="text" id="querySubject" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="queryMessage">Message</label>
+                                <textarea id="queryMessage" class="form-input" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;"><i class="fa-regular fa-paper-plane"></i> Send Message</button>
+                        </form>
+                    </div>
+
+                    <!-- Sleek Sending Animation Area -->
+                    <div class="envelope-animation" id="envelopeAnimation">
+                        <i class="fa-regular fa-envelope-open"></i>
+                        <h4 style="font-size: 1.5rem; font-weight: 700; margin-top: 1rem; color: var(--text-primary);">Message Sent!</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;">Your query has been dispatched successfully.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Book Add/Edit Modal -->
+    <div class="modal-overlay" id="bookModal">
+        <div class="glass-card modal">
+            <div class="modal-header">
+                <span class="modal-title" id="bookModalTitle">Add New Book</span>
+                <button class="modal-close" onclick="closeModal('bookModal')">&times;</button>
+            </div>
+            <form id="bookForm" onsubmit="saveBookData(event)">
+                <input type="hidden" id="bookId">
+                <div class="form-group">
+                    <label for="bookTitleInput">Title</label>
+                    <input type="text" id="bookTitleInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookAuthorInput">Author</label>
+                    <input type="text" id="bookAuthorInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookIsbnInput">ISBN</label>
+                    <input type="text" id="bookIsbnInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookCategoryInput">Category</label>
+                    <input type="text" id="bookCategoryInput" class="form-input" required placeholder="e.g. Fiction, Science, History">
+                </div>
+                <div class="form-group">
+                    <label for="bookCopiesInput">Total Copies</label>
+                    <input type="number" id="bookCopiesInput" class="form-input" required min="1" value="1">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('bookModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Member Add/Edit Modal -->
+    <div class="modal-overlay" id="memberModal">
+        <div class="glass-card modal">
+            <div class="modal-header">
+                <span class="modal-title" id="memberModalTitle">Add New Member</span>
+                <button class="modal-close" onclick="closeModal('memberModal')">&times;</button>
+            </div>
+            <form id="memberForm" onsubmit="saveMemberData(event)">
+                <input type="hidden" id="memberIdInput">
+                <div class="form-group">
+                    <label for="memberNameInput">Full Name</label>
+                    <input type="text" id="memberNameInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberEmailInput">Email Address</label>
+                    <input type="email" id="memberEmailInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberPhoneInput">Phone Number</label>
+                    <input type="text" id="memberPhoneInput" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberTypeInput">Membership Type</label>
+                    <select id="memberTypeInput" class="form-input" required>
+                        <option value="Student">Student</option>
+                        <option value="Faculty">Faculty</option>
+                        <option value="Regular">Regular</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('memberModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Issue Book Modal -->
+    <div class="modal-overlay" id="issueModal">
+        <div class="glass-card modal">
+            <div class="modal-header">
+                <span class="modal-title">Issue Book</span>
+                <button class="modal-close" onclick="closeModal('issueModal')">&times;</button>
+            </div>
+            <form id="issueForm" onsubmit="submitIssueBook(event)">
+                <div class="form-group">
+                    <label for="issueMemberId">Member ID</label>
+                    <input type="number" id="issueMemberId" class="form-input" required placeholder="e.g. 1">
+                </div>
+                <div class="form-group">
+                    <label for="issueBookId">Book ID</label>
+                    <input type="number" id="issueBookId" class="form-input" required placeholder="e.g. 3">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('issueModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Issue Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Return Book Modal -->
+    <div class="modal-overlay" id="returnModal">
+        <div class="glass-card modal">
+            <div class="modal-header">
+                <span class="modal-title">Return Book</span>
+                <button class="modal-close" onclick="closeModal('returnModal')">&times;</button>
+            </div>
+            <form id="returnForm" onsubmit="submitReturnBook(event)">
+                <div class="form-group">
+                    <label for="returnMemberId">Member ID</label>
+                    <input type="number" id="returnMemberId" class="form-input" required placeholder="e.g. 1">
+                </div>
+                <div class="form-group">
+                    <label for="returnBookId">Book ID</label>
+                    <input type="number" id="returnBookId" class="form-input" required placeholder="e.g. 3">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('returnModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Return Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Overlay -->
+    <div class="toast-notification" id="toast">
+        <i class="fa-solid fa-circle-check" id="toastIcon"></i>
+        <span id="toastMsg">Action completed successfully</span>
+    </div>
+
+    <!-- App Logic Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
